@@ -2,6 +2,7 @@ namespace ForumSharp
 
 open System
 open System.IO
+open System.Data.SQLite
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
@@ -23,7 +24,7 @@ module App =
         }
 
     // ---------------------------------
-    // Web app
+    // Routing
     // ---------------------------------
 
     let webApp =
@@ -35,11 +36,15 @@ module App =
                     routef "/f/%s" Forum.handler
                     routef "/t/%s" Thread.handler
                 ]
+            POST >=>
+                choose [
+                    //
+                ]
             setStatusCode 404 >=> text "Not Found" 
         ]
 
     // ---------------------------------
-    // Error handler
+    // Error handling
     // ---------------------------------
 
     let errorHandler (ex : Exception) (logger : ILogger) =
@@ -54,7 +59,8 @@ module App =
         builder
             .WithOrigins(
                 "http://localhost:5000",
-                "https://localhost:5001")
+                "https://localhost:5001"
+                )
             .AllowAnyMethod()
             .AllowAnyHeader()
             |> ignore
@@ -62,11 +68,12 @@ module App =
     let configureApp (app : IApplicationBuilder) =
         let env = app.ApplicationServices.GetService<IWebHostEnvironment>()
         (match env.IsDevelopment() with
-        | true  ->
-            app.UseDeveloperExceptionPage()
-        | false ->
-            app .UseGiraffeErrorHandler(errorHandler)
-                .UseHttpsRedirection())
+        | true  -> app.UseDeveloperExceptionPage()
+        | false -> 
+            app
+                .UseGiraffeErrorHandler(errorHandler)
+                .UseHttpsRedirection()
+        )
             .UseCors(configureCors)
             .UseStaticFiles()
             .UseGiraffe(webApp)
@@ -84,6 +91,7 @@ module App =
     let main args =
         let contentRoot = Directory.GetCurrentDirectory()
         let webRoot     = Path.Combine(contentRoot, "WebRoot")
+
         Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(
                 fun webHostBuilder ->
