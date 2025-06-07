@@ -9,10 +9,49 @@ module Layout =
         ]
 
     let threadPartial =
-        div [] []
+        div [] [
+            table [] [
+                tr [] [
+                    td [] [
+                        h3 [] [str "Thread title"]
+                    ]
+                    td [] [
+                        h3 [] [str "Replies: 0"]
+                    ]
+                ]
+                tr [] [
+                    td [] [
+                        strong [] [str "username"]
+                    ]
+                    td [] [
+                        p [] [str "post date/last reply date"]
+                    ]
+                ]
+            ]
+        ]
 
     let postPartial =
-        div [] []
+        div [] [
+            table [] [
+                tr [] [
+                    td [] [
+                        img [_id "ava"]
+                    ]
+                    td [] [
+                        p [] [str "Content"]
+                    ]
+                ]
+                tr [] [
+                    td [] [
+                        h3 [] [str "username"]
+                        strong [] [str "member"]
+                    ]
+                    td [] [
+                        p [] [str "date/reacts/id"]
+                    ]
+                ]
+            ]
+        ]
 
     let common (content: XmlNode list) =
         html [] [
